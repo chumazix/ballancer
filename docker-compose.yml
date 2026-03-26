@@ -1,0 +1,6 @@
+services:
+  ansible:
+    build: ./ansible
+    networks:
+      internal:
+        ipv4_address: 123.123.0.1
