@@ -1,0 +1,37 @@
+---
+- name: Install load balancers
+  hosts: lb
+  become: yes
+  tasks:
+    - name: Install nginx and vts module
+      apt:
+        name:
+          - nginx
+          - nginx-module-vts
+        state: present
+        update_cache: yes
+
+    - name: Copy nginx configuration for load balancing
+      copy:
+        src: files/nginx_lb.conf
+        dest: /etc/nginx/nginx.conf
+      notify: restart nginx
+
+    - name: Enable vts module
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        insertbefore: 'http {'
+        line: 'load_module modules/ngx_http_vhost_traffic_status_module.so;'
+      notify: restart nginx
+
+    - name: Ensure nginx is running
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted

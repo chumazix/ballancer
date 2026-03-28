@@ -1,0 +1,53 @@
+---
+- name: Install backend servers
+  hosts: backend
+  become: yes
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Create custom index page
+      copy:
+        content: |
+          <html>
+          <body>
+          <h1>Бэкенд {{ inventory_hostname[-1] }}</h1>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Configure nginx to listen on port 8080
+      copy:
+        dest: /etc/nginx/sites-available/default
+        content: |
+          server {
+              listen 8080 default_server;
+              root /var/www/html;
+              index index.html;
+              server_name _;
+          }
+      notify: restart nginx
+
+    - name: Disable default site if needed
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: link
+        src: /etc/nginx/sites-available/default
+
+    - name: Ensure nginx is running
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted

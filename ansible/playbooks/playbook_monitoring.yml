@@ -1,0 +1,130 @@
+---
+- name: Configure VictoriaMetrics
+  hosts: victoriametrics
+  become: yes
+  tasks:
+    - name: Download VictoriaMetrics binary
+      get_url:
+        url: https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.93.0/victoria-metrics-linux-amd64-v1.93.0.tar.gz
+        dest: /tmp/victoria-metrics.tar.gz
+
+    - name: Extract VictoriaMetrics
+      unarchive:
+        src: /tmp/victoria-metrics.tar.gz
+        dest: /usr/local/bin/
+        remote_src: yes
+        creates: /usr/local/bin/victoria-metrics-prod
+
+    - name: Copy binary to final location
+      copy:
+        src: /usr/local/bin/victoria-metrics-prod
+        dest: /usr/local/bin/victoria-metrics
+        remote_src: yes
+        mode: '0755'
+
+    - name: Create VictoriaMetrics systemd service
+      copy:
+        dest: /etc/systemd/system/victoriametrics.service
+        content: |
+          [Unit]
+          Description=VictoriaMetrics
+          After=network.target
+
+          [Service]
+          ExecStart=/usr/local/bin/victoria-metrics -storageDataPath=/var/lib/victoriametrics -httpListenAddr=:8428 -promscrape.config=/etc/victoriametrics/prometheus.yml
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Copy Prometheus scrape configuration
+      copy:
+        src: files/prometheus.yml
+        dest: /etc/victoriametrics/prometheus.yml
+      notify: restart victoriametrics
+
+    - name: Ensure directories exist
+      file:
+        path: /var/lib/victoriametrics
+        state: directory
+        owner: root
+        group: root
+
+    - name: Start victoriametrics
+      systemd:
+        name: victoriametrics
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart victoriametrics
+      systemd:
+        name: victoriametrics
+        state: restarted
+
+- name: Configure Grafana
+  hosts: grafana
+  become: yes
+  tasks:
+    - name: Add Grafana repository
+      apt_repository:
+        repo: "deb https://packages.grafana.com/oss/deb stable main"
+        state: present
+        update_cache: yes
+
+    - name: Add Grafana GPG key
+      apt_key:
+        url: https://packages.grafana.com/gpg.key
+        state: present
+
+    - name: Install Grafana
+      apt:
+        name: grafana
+        state: present
+        update_cache: yes
+
+    - name: Copy provisioning files for datasource
+      copy:
+        src: files/grafana_datasource.yml
+        dest: /etc/grafana/provisioning/datasources/victoriametrics.yml
+      notify: restart grafana
+
+    - name: Create dashboards directory
+      file:
+        path: /etc/grafana/provisioning/dashboards
+        state: directory
+
+    - name: Copy dashboard JSON
+      copy:
+        src: files/dashboards/system_dashboard.json
+        dest: /etc/grafana/provisioning/dashboards/system_dashboard.json
+      notify: restart grafana
+
+    - name: Copy dashboard provider config
+      copy:
+        dest: /etc/grafana/provisioning/dashboards/dashboard.yml
+        content: |
+          apiVersion: 1
+          providers:
+            - name: 'default'
+              orgId: 1
+              folder: ''
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /etc/grafana/provisioning/dashboards
+      notify: restart grafana
+
+    - name: Start Grafana
+      systemd:
+        name: grafana-server
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: restart grafana
+      systemd:
+        name: grafana-server
+        state: restarted
