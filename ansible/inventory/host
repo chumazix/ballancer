@@ -1,0 +1,15 @@
+[lb]
+lb1 ansible_host=172.20.0.10
+lb2 ansible_host=172.20.0.11
+
+[backend]
+backend1 ansible_host=172.20.0.20
+backend2 ansible_host=172.20.0.21
+
+[monitoring]
+victoriametrics ansible_host=172.20.0.30
+grafana ansible_host=172.20.0.31
+
+[all:vars]
+ansible_user=ansible
+ansible_ssh_private_key_file=/ansible/keys/id_rsa
