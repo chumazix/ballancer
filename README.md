@@ -1,3 +1,3 @@
 # ballancer
-# Клонируйте ветку ballancer
+# Копируйте ветку master
 # Спасибо
