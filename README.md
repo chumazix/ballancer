@@ -11,4 +11,4 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <url> && cd project
+   git clone <url> && cd ballancer
