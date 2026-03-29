@@ -15,4 +15,6 @@ RUN chmod 600 /root/.ssh/id_rsa && \
 COPY ansible /ansible
 WORKDIR /ansible
 
+ENV ANSIBLE_CONFIG=/ansible/ansible.cfg
+
 CMD ["sleep", "infinity"]
