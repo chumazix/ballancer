@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y sudo \
+RUN apt-get update && apt-get install -y \
     ansible \
     openssh-client \
     curl \
