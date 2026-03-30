@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     systemd \
     sudo \
-    pyhton3 \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash ansible && \

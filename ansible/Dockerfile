@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN usseradd -m -s /bin/bass ansible && \
+RUN useradd -m -s /bin/bahs ansible && \
     echo "ansible ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers 
 
 COPY ansible/keys/id_rsa /root/.ssh/id_rsa
