@@ -2,9 +2,6 @@
 - name: Configure Keepalived cluster
   hosts: lb
   become: yes
-  vars:
-    vip: "172.20.0.100"
-    interface: "eth0"
   tasks:
     - name: Install keepalived
       apt:
@@ -26,14 +23,19 @@
       when: inventory_hostname == 'lb2'
       notify: restart keepalived
 
-    - name: Ensure keepalived is started
-      systemd:
-        name: keepalived
-        state: started
-        enabled: yes
+    - name: Check if keepalived is running
+      command: pgrep keepalived
+      register: keepalived_pid
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Start keepalived if not running
+      command: keepalived -f /etc/keepalived/keepalived.conf
+      async: 0
+      poll: 0
+      when: keepalived_pid.rc != 0
 
   handlers:
     - name: restart keepalived
-      systemd:
-        name: keepalived
-        state: restarted
+      shell: pkill keepalived || true ; keepalived -f /etc/keepalived/keepalived.conf &
+      become: yes

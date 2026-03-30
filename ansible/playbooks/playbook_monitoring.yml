@@ -3,65 +3,45 @@
   hosts: victoriametrics
   become: yes
   tasks:
-    - name: Download VictoriaMetrics binary
+    - name: Install prerequisites
+      apt:
+        name: wget
+        state: present
+
+    - name: Download VictoriaMetrics
       get_url:
         url: https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.93.0/victoria-metrics-linux-amd64-v1.93.0.tar.gz
         dest: /tmp/victoria-metrics.tar.gz
 
-    - name: Extract VictoriaMetrics
+    - name: Extract
       unarchive:
         src: /tmp/victoria-metrics.tar.gz
         dest: /usr/local/bin/
         remote_src: yes
         creates: /usr/local/bin/victoria-metrics-prod
 
-    - name: Copy binary to final location
+    - name: Copy binary
       copy:
         src: /usr/local/bin/victoria-metrics-prod
         dest: /usr/local/bin/victoria-metrics
         remote_src: yes
         mode: '0755'
 
-    - name: Create VictoriaMetrics systemd service
-      copy:
-        dest: /etc/systemd/system/victoriametrics.service
-        content: |
-          [Unit]
-          Description=VictoriaMetrics
-          After=network.target
-
-          [Service]
-          ExecStart=/usr/local/bin/victoria-metrics -storageDataPath=/var/lib/victoriametrics -httpListenAddr=:8428 -promscrape.config=/etc/victoriametrics/prometheus.yml
-          Restart=always
-          User=root
-
-          [Install]
-          WantedBy=multi-user.target
-
-    - name: Copy Prometheus scrape configuration
-      copy:
-        src: /ansible/files/prometheus.yml
-        dest: /etc/victoriametrics/prometheus.yml
-      notify: restart victoriametrics
-
-    - name: Ensure directories exist
+    - name: Create directories
       file:
         path: /var/lib/victoriametrics
         state: directory
-        owner: root
-        group: root
 
-    - name: Start victoriametrics
-      systemd:
-        name: victoriametrics
-        state: started
-        enabled: yes
+    - name: Copy prometheus.yml
+      copy:
+        src: /ansible/files/prometheus.yml
+        dest: /etc/victoriametrics/prometheus.yml
 
-  handlers:
-    - name: restart victoriametrics
-      systemd:
-        name: victoriametrics
-        state: restarted
+    - name: Start VictoriaMetrics
+      command: /usr/local/bin/victoria-metrics -storageDataPath=/var/lib/victoriametrics -httpListenAddr=:8428 -promscrape.config=/etc/victoriametrics/prometheus.yml
+      async: 0
+      poll: 0
+      become: yes
 
 - name: Configure Grafana
   hosts: grafana
@@ -82,28 +62,19 @@
       apt:
         name: grafana
         state: present
-        update_cache: yes
 
-    - name: Copy provisioning files for datasource
+    - name: Copy datasource provisioning
       copy:
         src: /ansible/files/grafana_datasource.yml
         dest: /etc/grafana/provisioning/datasources/victoriametrics.yml
-      notify: restart grafana
 
-    - name: Create dashboards directory
-      file:
-        path: /etc/grafana/provisioning/dashboards
-        state: directory
-
-    - name: Copy dashboard JSON
+    - name: Copy dashboard provisioning
       copy:
         src: /ansible/files/dashboards/system_dashboard.json
         dest: /etc/grafana/provisioning/dashboards/system_dashboard.json
-      notify: restart grafana
 
     - name: Copy dashboard provider config
       copy:
-        dest: /etc/grafana/provisioning/dashboards/dashboard.yml
         content: |
           apiVersion: 1
           providers:
@@ -115,16 +86,10 @@
               editable: true
               options:
                 path: /etc/grafana/provisioning/dashboards
-      notify: restart grafana
+        dest: /etc/grafana/provisioning/dashboards/dashboard.yml
 
     - name: Start Grafana
-      systemd:
-        name: grafana-server
-        state: started
-        enabled: yes
-
-  handlers:
-    - name: restart grafana
-      systemd:
-        name: grafana-server
-        state: restarted
+      command: grafana-server -homepath /usr/share/grafana
+      async: 0
+      poll: 0
+      become: yes
