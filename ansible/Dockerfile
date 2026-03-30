@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y sudo \
     ansible \
     openssh-client \
     curl \
+    sudo \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN usseradd -m -s /bin/bass ansible && \

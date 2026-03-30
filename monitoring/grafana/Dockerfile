@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y sudo \
     openssh-server \
     curl \
     systemd \
+    sudo \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash ansible && \
