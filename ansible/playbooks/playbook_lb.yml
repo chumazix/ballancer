@@ -3,11 +3,9 @@
   hosts: lb
   become: yes
   tasks:
-    - name: Install nginx and vts module
+    - name: Install nginx-extras (includes vts module)
       apt:
-        name:
-          - nginx
-          - nginx-module-vts
+        name: nginx-extras
         state: present
         update_cache: yes
 
@@ -17,21 +15,18 @@
         dest: /etc/nginx/nginx.conf
       notify: restart nginx
 
-    - name: Enable vts module
+    - name: Ensure vts module is loaded
       lineinfile:
         path: /etc/nginx/nginx.conf
-        insertbefore: 'http {'
-        line: 'load_module modules/ngx_http_vhost_traffic_status_module.so;'
+        insertbefore: '^http {'
+        line: 'load_module /usr/lib/nginx/modules/ngx_http_vhost_traffic_status_module.so;'
       notify: restart nginx
 
-    - name: Ensure nginx is running
-      systemd:
-        name: nginx
-        state: started
-        enabled: yes
+    - name: Start nginx
+      command: nginx
+      args:
+        creates: /var/run/nginx.pid
 
   handlers:
     - name: restart nginx
-      systemd:
-        name: nginx
-        state: restarted
+      command: nginx -s reload

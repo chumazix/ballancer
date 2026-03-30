@@ -40,14 +40,13 @@
         state: link
         src: /etc/nginx/sites-available/default
 
-    - name: Ensure nginx is running
-      systemd:
-        name: nginx
-        state: started
-        enabled: yes
+    - name: Start nginx
+      command: nginx
+      args:
+        creates: /var/run/nginx.pid
+      become: yes
 
   handlers:
     - name: restart nginx
-      systemd:
-        name: nginx
-        state: restarted
+      command: nginx -s reload
+      become: yes
