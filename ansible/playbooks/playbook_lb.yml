@@ -3,23 +3,16 @@
   hosts: lb
   become: yes
   tasks:
-    - name: Install nginx-extras (includes vts module)
+    - name: Install nginx-extras (includes stub_status)
       apt:
         name: nginx-extras
         state: present
         update_cache: yes
 
-    - name: Copy nginx configuration for load balancing
+    - name: Copy nginx configuration for load balancing with stub_status
       copy:
-        src: files/nginx_lb.conf
+        src: /ansible/files/nginx_lb.conf
         dest: /etc/nginx/nginx.conf
-      notify: restart nginx
-
-    - name: Ensure vts module is loaded
-      lineinfile:
-        path: /etc/nginx/nginx.conf
-        insertbefore: '^http {'
-        line: 'load_module /usr/lib/nginx/modules/ngx_http_vhost_traffic_status_module.so;'
       notify: restart nginx
 
     - name: Start nginx

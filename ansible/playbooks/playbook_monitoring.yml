@@ -40,7 +40,7 @@
 
     - name: Copy Prometheus scrape configuration
       copy:
-        src: files/prometheus.yml
+        src: /ansible/files/prometheus.yml
         dest: /etc/victoriametrics/prometheus.yml
       notify: restart victoriametrics
 
@@ -86,7 +86,7 @@
 
     - name: Copy provisioning files for datasource
       copy:
-        src: files/grafana_datasource.yml
+        src: /ansible/files/grafana_datasource.yml
         dest: /etc/grafana/provisioning/datasources/victoriametrics.yml
       notify: restart grafana
 
@@ -97,7 +97,7 @@
 
     - name: Copy dashboard JSON
       copy:
-        src: files/dashboards/system_dashboard.json
+        src: /ansible/files/dashboards/system_dashboard.json
         dest: /etc/grafana/provisioning/dashboards/system_dashboard.json
       notify: restart grafana
 
