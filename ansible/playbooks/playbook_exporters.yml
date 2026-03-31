@@ -50,3 +50,39 @@
 
     - name: Start nginx-prometheus-exporter
       shell: nohup /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /dev/null 2>&1 &
+
+- name: Install cron and set up automatic startup for exporters
+  hosts: all:!monitoring
+  become: yes
+  tasks:
+    - name: Install cron
+      apt:
+        name: cron
+        state: present
+        update_cache: yes
+
+    - name: Start cron service
+      service:
+        name: cron
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: Add node_exporter to crontab
+      cron:
+        name: "start node_exporter"
+        special_time: reboot
+        job: "/usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1"
+        user: root
+      when: inventory_hostname != 'victoriametrics' and inventory_hostname != 'grafana'
+
+- name: Add nginx-exporter to crontab on load balancers
+  hosts: lb
+  become: yes
+  tasks:
+    - name: Add nginx-prometheus-exporter to crontab
+      cron:
+        name: "start nginx-prometheus-exporter"
+        special_time: reboot
+        job: "/usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1"
+        user: root
