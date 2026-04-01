@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     systemd \
     sudo \
     python3 \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash ansible && \
@@ -20,4 +21,4 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "cron && /usr/sbin/sshd -D"]

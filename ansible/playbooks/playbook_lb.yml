@@ -20,6 +20,13 @@
       args:
         creates: /var/run/nginx.pid
 
+    - name: Add nginx to crontab for autostart
+      cron:
+        name: "start nginx"
+        special_time: reboot
+        job: "nginx"
+        user: root
+
   handlers:
     - name: restart nginx
       command: nginx -s reload
