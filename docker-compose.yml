@@ -14,6 +14,7 @@ services:
       dockerfile: lb1/Dockerfile
     container_name: lb1
     hostname: lb1
+    privileged: true
     networks:
       backend-net:
         ipv4_address: 172.20.0.10
@@ -27,6 +28,7 @@ services:
       dockerfile: lb2/Dockerfile
     container_name: lb2
     hostname: lb2
+    privileged: true
     networks:
       backend-net:
         ipv4_address: 172.20.0.11

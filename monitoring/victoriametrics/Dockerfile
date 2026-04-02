@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     systemd \
     sudo \
     python3 \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash ansible && \
@@ -20,4 +21,5 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 EXPOSE 22
-CMD ["sh", "-c", "cron && /usr/sbin/sshd -D & tail -f /dev/null"]
+
+CMD ["sh", "-c", "/usr/sbin/sshd -D & /usr/local/bin/victoria-metrics -storageDataPath=/var/lib/victoriametrics -httpListenAddr=:8428 -promscrape.config=/etc/victoriametrics/prometheus.yml & tail -f /dev/null"]

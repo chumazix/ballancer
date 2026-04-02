@@ -61,12 +61,12 @@
         state: present
         update_cache: yes
 
-    - name: Start cron service
-      service:
-        name: cron
-        state: started
-        enabled: yes
-      ignore_errors: yes
+#    - name: Start cron service
+#      service:
+#        name: cron
+#        state: started
+#        enabled: yes
+#      ignore_errors: yes
 
     - name: Add node_exporter to crontab
       cron:
