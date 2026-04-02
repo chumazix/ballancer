@@ -1,5 +1,9 @@
 FROM debian:bookworm-slim
 
+# Замена репозиториев (если нужно)
+#RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources && \
+#    sed -i 's/security.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources
+
 RUN apt-get update && apt-get install -y \
     openssh-server \
     curl \
@@ -21,4 +25,4 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 EXPOSE 22
-CMD ["sh", "-c", "cron && /usr/sbin/sshd -D"]
+CMD ["sh", "-c", "cron && /usr/sbin/sshd -D & nginx & tail -f /dev/null"]

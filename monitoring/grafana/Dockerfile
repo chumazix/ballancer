@@ -20,4 +20,4 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["sh", "-c", "cron && /usr/sbin/sshd -D & tail -f /dev/null"]
