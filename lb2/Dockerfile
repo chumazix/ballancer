@@ -26,4 +26,4 @@ RUN mkdir /var/run/sshd && \
 
 EXPOSE 22
 
-CMD ["sh", "-c", "sysctl -w net.ipv4.conf.eth0.rp_filter=0 && sysctl -w net.v4.conf.all.rp_filter=0 && cron && /usr/sbin/sshd -D & tail -f /dev/null"]
+CMD ["sh", "-c", "cron && /usr/sbin/sshd -D & tail -f /dev/null"]
