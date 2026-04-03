@@ -28,14 +28,14 @@ ansible-playbook -i inventory/hosts.ini playbooks/playbook_monitoring.yml
 exit
 ```
 
-3. Дополнительная настройка для WSL или Вирутальных машин:
+3. Дополнительная настройка для Вирутальных машин:
 ```bash
 # Отключить rp_filter
 sudo sysctl -w net.ipv4.conf.all.rp_filter=0
 sudo sysctl -w net.ipv4.conf.default.rp_filter=0
 
 # Найти bridge-интерфейс сети backend-net
-BRIDGE=$(docker network inspect backend-net -f '{{ (index .Options "com.docker.network.bridge.name") }}')
-if [ -n "$BRIDGE" ]; then
-    sudo ip route add 172.20.0.100/32 dev $BRIDGE
-fi
+ip -4 addr show | grep -A 3 "br-"
+
+# Найденый интерфейс из прошлой команды вставте вместо "br-..."
+sudo ip route add 172.20.0.100/32 dev "br-..."
