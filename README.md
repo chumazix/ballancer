@@ -10,35 +10,32 @@
 ## Развёртывание
 
 1. Клонируйте репозиторий:
-   ```bash
-   git clone <url> && cd ballancer
+```bash
+git clone <url> && cd ballancer 
+```
 
+2. Выполните следующие команды по порядку:
+```bash
+docker exec -it ansible bash
+cd /ansible
 
+ansible-playbook -i inventory/hosts.ini playbooks/playbook_backend.yml
+ansible-playbook -i inventory/hosts.ini playbooks/playbook_lb.yml
+ansible-playbook -i inventory/hosts.ini playbooks/playbook_exporters.yml
+ansible-playbook -i inventory/hosts.ini playbooks/playbook_cluster.yml
+ansible-playbook -i inventory/hosts.ini playbooks/playbook_monitoring.yml
 
+exit
+```
 
+3. Дополнительная настройка для WSL или Вирутальных машин:
+```bash
+# Отключить rp_filter
+sudo sysctl -w net.ipv4.conf.all.rp_filter=0
+sudo sysctl -w net.ipv4.conf.default.rp_filter=0
 
-Добавление официального GPG-ключа Docker:
-
-bash
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-Добавление репозитория Docker:
-
-bash
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update
-Установка Docker Engine и Docker Compose:
-
-bash
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-Docker Compose установится как плагин, и его можно будет вызывать командой docker compose.
-
-Настройка прав пользователя (опционально, но удобно):
-Добавьте вашего пользователя в группу docker, чтобы запускать команды без sudo.
-
-bash
-sudo usermod -aG docker $USER
+# Найти bridge-интерфейс сети backend-net
+BRIDGE=$(docker network inspect backend-net -f '{{ (index .Options "com.docker.network.bridge.name") }}')
+if [ -n "$BRIDGE" ]; then
+    sudo ip route add 172.20.0.100/32 dev $BRIDGE
+fi
