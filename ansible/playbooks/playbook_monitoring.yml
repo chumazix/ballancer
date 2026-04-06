@@ -117,7 +117,7 @@
               disableDeletion: false
               editable: true
               options:
-                path: /ansible/files/dashboards
+                path: /etc/grafana/provisioning/dashboardss
 
     - name: Copy dashboard JSON
       copy:

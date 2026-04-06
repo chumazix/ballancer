@@ -28,7 +28,7 @@ ansible-playbook -i inventory/hosts.ini playbooks/playbook_monitoring.yml
 exit
 ```
 
-3. Дополнительная настройка для Вирутальных машин:
+3. Дополнительная настройка для Вирутальных машин (Выполнять до шага 2):
 ```bash
 # Отключить rp_filter
 sudo sysctl -w net.ipv4.conf.all.rp_filter=0
