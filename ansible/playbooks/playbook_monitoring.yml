@@ -106,23 +106,17 @@
 
     - name: Copy dashboard provider configuration
       copy:
+        src: /ansible/files/dashboards/dashboard.yml
         dest: /etc/grafana/provisioning/dashboards/dashboard.yml
-        content: |
-          apiVersion: 1
-          providers:
-            - name: 'default'
-              orgId: 1
-              folder: ''
-              type: file
-              disableDeletion: false
-              editable: true
-              options:
-                path: /etc/grafana/provisioning/dashboardss
 
     - name: Copy dashboard JSON
       copy:
         src: /ansible/files/dashboards/system_dashboard.json
         dest: /etc/grafana/provisioning/dashboards/system_dashboard.json
 
+    - name: Stop Grafana if running
+      shell: pkill grafana-server || true
+      ignore_errors: yes
+
     - name: Start Grafana
-      shell: nohup /usr/local/grafana/bin/grafana-server -homepath /usr/local/grafana -config /usr/local/grafana/conf/defaults.ini > /var/log/grafana/grafana.log 2>&1 &
+      shell: nohup /usr/local/grafana/bin/grafana-server -homepath /usr/local/grafana -config /usr/local/grafana/conf/defaults.ini > /var/log/grafana.log 2>&1 &
