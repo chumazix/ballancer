@@ -69,6 +69,8 @@ services:
     volumes:
       - ./ansible:/ansible
     restart: unless-stopped
+    environment:
+      - ANSIBLE_CONFIG=/ansible/ansible.cfg
 
   victoriametrics:
     build:
