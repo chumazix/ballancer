@@ -15,10 +15,6 @@
 - Docker и Docker Compose
 - Git
 
-## Скриншоты
-
-![System Dashboard](screenshots/dashboard.png)
-
 ## Развёртывание
 
 1. Клонируйте репозиторий:
@@ -51,3 +47,8 @@ ip -4 addr show | grep -A 3 "br-"
 
 # Найденый интерфейс из прошлой команды вставте вместо "br-..."
 sudo ip route add 172.20.0.100/32 dev "br-..."
+```
+
+## Скринышоты дашбордов
+
+![System Dashboard](screenshots/dashboard.png)
