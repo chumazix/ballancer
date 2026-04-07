@@ -56,10 +56,16 @@
         update_cache: yes
 
     - name: Download Grafana OSS
-      shell: wget -4 --no-check-certificate --progress=dot -c https://dl.grafana.com/oss/release/grafana-11.6.0.linux-amd64.tar.gz -O /tmp/grafana.tar.gz
-      args:
-        creates: /tmp/grafana.tar.gz
+      get_url:
+        url: https://dl.grafana.com/oss/release/grafana-11.6.0.linux-amd64.tar.gz
+        dest: /tmp/grafana.tar.gz
+        timeout: 120
+        force: yes
       become: yes
+      register: download_result
+      until: download_result is success
+      retries: 3
+      delay: 5
 
     - name: Extract Grafana
       unarchive:
