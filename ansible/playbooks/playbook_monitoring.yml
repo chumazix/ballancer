@@ -120,3 +120,24 @@
 
     - name: Start Grafana
       shell: nohup /usr/local/grafana/bin/grafana-server -homepath /usr/local/grafana -config /usr/local/grafana/conf/defaults.ini > /var/log/grafana.log 2>&1 &
+
+    - name: Wait for Grafana to start
+      wait_for:
+        port: 3000
+        host: localhost
+        timeout: 30
+      delegate_to: localhost
+
+    - name: Import dashboard via API
+      uri:
+        url: http://localhost:3000/api/dashboards/db
+        method: POST
+        user: admin
+        password: admin
+        force_basic_auth: yes
+        body_format: json
+        body:
+          dashboard: "{{ lookup('file', '/ansible/files/dashboards/system_dashboard.json') | from_json }}"
+          overwrite: true
+        status_code: 200
+      delegate_to: localhost
