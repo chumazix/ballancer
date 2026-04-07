@@ -115,11 +115,9 @@
         dest: /etc/grafana/provisioning/dashboards/system_dashboard.json
 
     - name: Stop Grafana if running
-      shell: |
-        pkill -f grafana-server || true
-        killall grafana-server 2>/dev/null || true
-        rm -f /var/run/grafana-server.pid 2>/dev/null || true
+      command: pkill -f grafana-server
       ignore_errors: yes
+      failed_when: falses
 
     - name: Start Grafana
       shell: nohup /usr/local/grafana/bin/grafana-server -homepath /usr/local/grafana -config /usr/local/grafana/conf/defaults.ini > /var/log/grafana.log 2>&1 &
