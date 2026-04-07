@@ -130,6 +130,24 @@
         host: grafana
         timeout: 60
 
+    - name: Create VictoriaMetrics datasource via API
+      uri:
+        url: http://grafana:3000/api/datasources
+        method: POST
+        user: admin
+        password: admin
+        force_basic_auth: yes
+        body_format: json
+        body:
+          name: VictoriaMetrics
+          type: prometheus
+          url: http://victoriametrics:8428
+          access: proxy
+          isDefault: true
+        status_code: 200
+      register: datasource_result
+      failed_when: datasource_result.status != 200 and datasource_result.json.message != "Data source with same name already exists"
+
     - name: Import dashboard via API
       uri:
         url: http://grafana:3000/api/dashboards/db
