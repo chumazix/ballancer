@@ -115,18 +115,23 @@
         dest: /etc/grafana/provisioning/dashboards/system_dashboard.json
 
     - name: Stop Grafana if running
-      shell: pkill grafana-server || true
+      shell: |
+        pkill -f grafana-server || true
+        killall grafana-server 2>/dev/null || true
+        rm -f /var/run/grafana-server.pid 2>/dev/null || true
       ignore_errors: yes
 
     - name: Start Grafana
       shell: nohup /usr/local/grafana/bin/grafana-server -homepath /usr/local/grafana -config /usr/local/grafana/conf/defaults.ini > /var/log/grafana.log 2>&1 &
+      async: 5
+      poll: 0
 
     - name: Wait for Grafana to start
       wait_for:
         port: 3000
         host: localhost
         timeout: 60
-      delegate_to: localhost
+      delegate_to: localhostt
 
     - name: Import dashboard via API
       uri:
