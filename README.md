@@ -15,6 +15,10 @@
 - Docker и Docker Compose
 - Git
 
+## Скриншоты
+
+![System Dashboard](screenshots/dashboard.png)
+
 ## Развёртывание
 
 1. Клонируйте репозиторий:
