@@ -144,9 +144,8 @@
           url: http://victoriametrics:8428
           access: proxy
           isDefault: true
-        status_code: 200
+        status_code: [200, 409]   # 200 - создан, 409 - уже существует
       register: datasource_result
-      failed_when: datasource_result.status != 200 and datasource_result.json.message != "Data source with same name already exists"
 
     - name: Import dashboard via API
       uri:
