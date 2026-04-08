@@ -52,7 +52,7 @@ ip -4 addr show | grep -A 3 "br-"
 # Найденый интерфейс из прошлой команды вставте вместо "br-..."
 sudo ip route add 172.20.0.100/32 dev "br-..."
 ```
-# Так же выполните ansible-playbook -i /ansible/.... после настройки
+# Обязательно после настройки выполните ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_monitoring.yml 
 
 ## Скринышоты дашбордов
 
