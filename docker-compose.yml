@@ -71,6 +71,8 @@ services:
     restart: unless-stopped
     environment:
       - ANSIBLE_CONFIG=/ansible/ansible.cfg
+    command: sh -c "chmod 600 /ansible/keys/id_rsa && sleep infinity"
+    restart: unless-stopped
 
   victoriametrics:
     build:
