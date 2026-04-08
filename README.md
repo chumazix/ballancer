@@ -19,7 +19,9 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone <url> && cd ballancer 
+git clone <url> && cd ballancer
+# Доюавьте права если есть ошибка UNPROTECTED PRIVATE KEY FILE единоразово 
+chmod 600 ansible/keys/id_rsa
 # Запуск контейнеров иначе в них не зайти
 docker compose up -d
 # Смотря как установлен docker comopose
