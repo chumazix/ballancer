@@ -17,6 +17,8 @@ RUN chmod 600 /root/.ssh/id_rsa && \
     chmod 644 /root/.ssh/id_rsa.pub && \
     echo "StrictHostKeyChecking no" >> /root/.ssh/config
 
+RUN chmod 600 /root/.ssh/id_rsa
+
 COPY ansible /ansible
 WORKDIR /ansible
 

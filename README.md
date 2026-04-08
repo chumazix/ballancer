@@ -20,6 +20,10 @@
 1. Клонируйте репозиторий:
 ```bash
 git clone <url> && cd ballancer 
+# Запуск контейнеров иначе в них не зайти
+docker compose up -d
+# Смотря как установлен docker comopose
+docker-compose up -d
 ```
 
 2. Выполните следующие команды по порядку:
@@ -27,11 +31,12 @@ git clone <url> && cd ballancer
 docker exec -it ansible bash
 cd /ansible
 
-ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_backend.yml
-ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_lb.yml
-ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_exporters.yml
-ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_cluster.yml
-ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_monitoring.yml
+ansible-playbook (-i /ansible/inventory/hosts.ini) playbooks/playbook_backend.yml
+ansible-playbook playbooks/playbook_lb.yml
+ansible-playbook playbooks/playbook_exporters.yml
+ansible-playbook playbooks/playbook_cluster.yml
+ansible-playbook playbooks/playbook_monitoring.yml
+# В () указание инвентаря, чтобы избежать случайнрого применения не к тем хостам. Можно применять ко всем плейбукам
 # В playbook_monitoring может быть ошибка, но на работу системы она не влияет
 
 exit
@@ -52,7 +57,7 @@ ip -4 addr show | grep -A 3 "br-"
 # Найденый интерфейс из прошлой команды вставте вместо "br-..."
 sudo ip route add 172.20.0.100/32 dev "br-..."
 ```
-# Обязательно после настройки выполните ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_monitoring.yml 
+# Обязательно после настройки выполните ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_cluster.yml 
 
 ## Скринышоты дашбордов
 
