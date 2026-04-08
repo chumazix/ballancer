@@ -32,6 +32,7 @@ ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_lb.yml
 ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_exporters.yml
 ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_cluster.yml
 ansible-playbook -i /ansible/inventory/hosts.ini playbooks/playbook_monitoring.yml
+# В playbook_monitoring может быть ошибка, но на работу системы она не влияет
 
 exit
 ```
