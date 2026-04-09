@@ -22,4 +22,4 @@ RUN mkdir /var/run/sshd && \
 
 EXPOSE 22
 
-CMD ["sh", "-c", "/usr/sbin/sshd -D & /usr/local/bin/victoria-metrics -storageDataPath=/var/lib/victoriametrics -httpListenAddr=:8428 -promscrape.config=/etc/victoriametrics/prometheus.yml & tail -f /dev/null"]
+CMD ["sh", "-c", "cron && /usr/sbin/sshd -D & tail -f /dev/null"]
