@@ -96,8 +96,8 @@
         url: https://github.com/mehdy/keepalived-exporter/releases/download/v0.8.0/keepalived-exporter-0.8.0.linux-amd64.tar.gz
         dest: /tmp/keepalived-exporter.tar.gz
 
-   - name: Extract keepalived-exporter
-     unarchive:
+    - name: Extract keepalived-exporter
+      unarchive:
         src: /tmp/keepalived-exporter.tar.gz
         dest: /usr/local/bin/
         remote_src: yes
