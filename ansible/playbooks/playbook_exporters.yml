@@ -61,12 +61,12 @@
         state: present
         update_cache: yes
 
-#    - name: Start cron service
-#      service:
-#        name: cron
-#        state: started
-#        enabled: yes
-#      ignore_errors: yes
+    - name: Start cron service
+      service:
+        name: cron
+        state: started
+        enabled: yes
+      ignore_errors: yes
 
     - name: Add node_exporter to crontab
       cron:
@@ -85,4 +85,37 @@
         name: "start nginx-prometheus-exporter"
         special_time: reboot
         job: "/usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1"
+        user: root
+
+- name: Install keepalived-exporter on load balancers
+  hosts: lb
+  become: yes
+  tasks:
+    - name: Download keepalived-exporter
+      get_url:
+        url: https://github.com/Starefoss/keepalived-exporter/releases/download/v1.3.0/keepalived-exporter-1.3.0.linux-amd64.tar.gz
+        dest: /tmp/keepalived-exporter.tar.gz
+
+    - name: Extract keepalived-exporter
+      unarchive:
+        src: /tmp/keepalived-exporter.tar.gz
+        dest: /usr/local/bin/
+        remote_src: yes
+        creates: /usr/local/bin/keepalived-exporter
+
+    - name: Copy binary to path
+      copy:
+        src: /usr/local/bin/keepalived-exporter
+        dest: /usr/local/bin/keepalived-exporter
+        remote_src: yes
+        mode: '0755'
+
+    - name: Start keepalived-exporter
+      shell: nohup /usr/local/bin/keepalived-exporter > /var/log/keepalived-exporter.log 2>&1 &
+
+    - name: Add keepalived-exporter to crontab for autostart
+      cron:
+        name: "start keepalived-exporter"
+        special_time: reboot
+        job: "/usr/local/bin/keepalived-exporter > /var/log/keepalived-exporter.log 2>&1"
         user: root
