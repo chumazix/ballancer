@@ -43,7 +43,7 @@
       "type": "stat",
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
       "targets": [
-        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.10:9654\"}", "legendFormat": "VIP status", "refId": "A" }
+        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.10:9165\"}", "legendFormat": "VIP status", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
