@@ -93,7 +93,7 @@
   tasks:
     - name: Download keepalived-exporter
       get_url:
-        url: https://github.com/mehdy/keepalived-exporter/releases/download/v1.7.0/keepalived-exporter-1.7.0.linux-amd64.tar.gz
+        url: https://github.com/mehdy/keepalived-exporter/releases/download/v1.7.0/keepalived-exporter_1.7.0_linux_amd64.tar.gz
         dest: /tmp/keepalived-exporter.tar.gz
 
     - name: Extract keepalived-exporter
