@@ -97,7 +97,7 @@
         dest: /tmp/keepalived-exporter.tar.gz
 
    - name: Extract keepalived-exporter
-      unarchive:
+     unarchive:
         src: /tmp/keepalived-exporter.tar.gz
         dest: /usr/local/bin/
         remote_src: yes
