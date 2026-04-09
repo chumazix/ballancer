@@ -1,8 +1,8 @@
 FROM debian:bookworm-slim
 
-# Замена репозиториев (если нужно)
-#RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources && \
-#    sed -i 's/security.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources
+# При необходимости раскомментируйте строки для зеркала Яндекс
+# RUN sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources && \
+#     sed -i 's/security.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update && apt-get install -y \
     openssh-server \
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     python3 \
     cron \
+    iproute2 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash ansible && \
@@ -26,4 +27,4 @@ RUN mkdir /var/run/sshd && \
 
 EXPOSE 22
 
-CMD ["sh", "-c", "sysctl -w net.ipv4.conf.eth0.rp_filter=0 && sysctl -w net.ipv4.conf.all.rp_filter=0 && /usr/sbin/sshd -D & nginx & keepalived -f /etc/keepalived/keepalived.conf & /usr/local/bin/node_exporter & /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status & tail -f /dev/null"]
+CMD ["sh", "-c", "sysctl -w net.ipv4.conf.eth0.rp_filter=0 && sysctl -w net.ipv4.conf.all.rp_filter=0 && cron && /usr/sbin/sshd -D & tail -f /dev/null"]
