@@ -40,6 +40,8 @@
     - name: Start VictoriaMetrics
       shell: nohup /usr/local/bin/victoria-metrics -storageDataPath=/var/lib/victoriametrics -httpListenAddr=:8428 -promscrape.config=/etc/victoriametrics/prometheus.yml > /var/log/victoriametrics.log 2>&1 &
       become: yes
+      async: 0
+      poll: 0
 
 - name: Configure Grafana
   hosts: grafana

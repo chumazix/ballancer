@@ -1,5 +1,5 @@
 ---
-- name: Install node_exporter on all nodes
+- name: Install node_exporter on all nodes (except monitoring)
   hosts: all:!monitoring
   become: yes
   tasks:
@@ -22,8 +22,10 @@
         remote_src: yes
         mode: '0755'
 
-    - name: Start node_exporter
-      shell: nohup /usr/local/bin/node_exporter > /dev/null 2>&1 &
+    - name: Start node_exporter (background)
+      shell: nohup /usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1 &
+      async: 0
+      poll: 0
 
 - name: Install nginx-prometheus-exporter on load balancers
   hosts: lb
@@ -48,44 +50,10 @@
         remote_src: yes
         mode: '0755'
 
-    - name: Start nginx-prometheus-exporter
-      shell: nohup /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /dev/null 2>&1 &
-
-- name: Install cron and set up automatic startup for exporters
-  hosts: all:!monitoring
-  become: yes
-  tasks:
-    - name: Install cron
-      apt:
-        name: cron
-        state: present
-        update_cache: yes
-
-    - name: Start cron service
-      service:
-        name: cron
-        state: started
-        enabled: yes
-      ignore_errors: yes
-
-    - name: Add node_exporter to crontab
-      cron:
-        name: "start node_exporter"
-        special_time: reboot
-        job: "/usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1"
-        user: root
-      when: inventory_hostname != 'victoriametrics' and inventory_hostname != 'grafana'
-
-- name: Add nginx-exporter to crontab on load balancers
-  hosts: lb
-  become: yes
-  tasks:
-    - name: Add nginx-prometheus-exporter to crontab
-      cron:
-        name: "start nginx-prometheus-exporter"
-        special_time: reboot
-        job: "/usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1"
-        user: root
+    - name: Start nginx-prometheus-exporter (background)
+      shell: nohup /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1 &
+      async: 0
+      poll: 0
 
 - name: Install keepalived-exporter on load balancers
   hosts: lb
@@ -110,10 +78,44 @@
         remote_src: yes
         mode: '0755'
 
-    - name: Start keepalived-exporter
+    - name: Start keepalived-exporter (background)
       shell: nohup /usr/local/bin/keepalived-exporter > /var/log/keepalived-exporter.log 2>&1 &
+      async: 0
+      poll: 0
 
-    - name: Add keepalived-exporter to crontab for autostart
+- name: Add cron jobs for autostart (node_exporter on all nodes)
+  hosts: all:!monitoring
+  become: yes
+  tasks:
+    - name: Install cron (if not present)
+      apt:
+        name: cron
+        state: present
+        update_cache: yes
+
+    - name: Add node_exporter to crontab
+      cron:
+        name: "start node_exporter"
+        special_time: reboot
+        job: "/usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1"
+        user: root
+
+- name: Add cron jobs for autostart (nginx-exporter on load balancers)
+  hosts: lb
+  become: yes
+  tasks:
+    - name: Add nginx-prometheus-exporter to crontab
+      cron:
+        name: "start nginx-prometheus-exporter"
+        special_time: reboot
+        job: "/usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1"
+        user: root
+
+- name: Add cron jobs for autostart (keepalived-exporter on load balancers)
+  hosts: lb
+  become: yes
+  tasks:
+    - name: Add keepalived-exporter to crontab
       cron:
         name: "start keepalived-exporter"
         special_time: reboot
