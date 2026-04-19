@@ -20,5 +20,20 @@ while [ ! -f /etc/keepalived/keepalived.conf ]; do
 done
 keepalived -f /etc/keepalived/keepalived.conf &
 
+# Запуск node_exporter (если установлен)
+if [ -f /usr/local/bin/node_exporter ]; then
+    /usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1 &
+fi
+
+# Запуск nginx-prometheus-exporter (если установлен)
+if [ -f /usr/local/bin/nginx-prometheus-exporter ]; then
+    /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1 &
+fi
+
+# Запуск keepalived-exporter (если установлен)
+if [ -f /usr/local/bin/keepalived-exporter ]; then
+    /usr/local/bin/keepalived-exporter > /var/log/keepalived-exporter.log 2>&1 &
+fi
+
 # Держим контейнер активным
 tail -f /dev/null
