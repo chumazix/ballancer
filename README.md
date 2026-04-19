@@ -38,6 +38,7 @@ ansible-playbook playbooks/playbook_lb.yml
 ansible-playbook playbooks/playbook_exporters.yml
 ansible-playbook playbooks/playbook_cluster.yml
 ansible-playbook playbooks/playbook_monitoring.yml
+ansible-playbook playbooks/playbook_cluster.yml
 # В () указание инвентаря, чтобы избежать случайнрого применения не к тем хостам. Можно применять ко всем плейбукам
 # В playbook_monitoring может быть ошибка, но на работу системы она не влияет
 
