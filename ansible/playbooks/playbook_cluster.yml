@@ -26,33 +26,25 @@
         src: /ansible/files/keepalived_lb1.conf
         dest: /etc/keepalived/keepalived.conf
       when: inventory_hostname == 'lb1'
-      notify: restart keepalived
 
     - name: Copy keepalived configuration for lb2
       copy:
         src: /ansible/files/keepalived_lb2.conf
         dest: /etc/keepalived/keepalived.conf
       when: inventory_hostname == 'lb2'
-      notify: restart keepalived
 
-    - name: Check if keepalived is running
-      command: pgrep keepalived
-      register: keepalived_pid
-      failed_when: false
-      changed_when: false
-
-    - name: Start keepalived if not running
-      command: keepalived -f /etc/keepalived/keepalived.conf
+    - name: Ensure keepalived is started (kill old process if any)
+      shell: pkill keepalived || true ; keepalived -f /etc/keepalived/keepalived.conf &
       async: 0
       poll: 0
-      when: keepalived_pid.rc != 0
 
-    - name: Wait for VIP to appear (give keepalived time)
+    - name: Wait for VIP to appear
       pause:
         seconds: 3
-      when: keepalived_pid.rc != 0
 
-  handlers:
-    - name: restart keepalived
-      shell: pkill keepalived || true ; keepalived -f /etc/keepalived/keepalived.conf &
-      become: yes
+    - name: Add keepalived to crontab for autostart (fallback)
+      cron:
+        name: "start keepalived"
+        special_time: reboot
+        job: "keepalived -f /etc/keepalived/keepalived.conf > /var/log/keepalived.log 2>&1"
+        user: root
