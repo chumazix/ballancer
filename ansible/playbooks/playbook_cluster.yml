@@ -52,13 +52,6 @@
         seconds: 3
       when: keepalived_pid.rc != 0
 
-    - name: Add keepalived to crontab for autostart
-      cron:
-        name: "start keepalived"
-        special_time: reboot
-        job: "keepalived -f /etc/keepalived/keepalived.conf > /var/log/keepalived.log 2>&1"
-        user: root
-
   handlers:
     - name: restart keepalived
       shell: pkill keepalived || true ; keepalived -f /etc/keepalived/keepalived.conf &
