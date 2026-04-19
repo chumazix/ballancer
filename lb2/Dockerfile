@@ -25,6 +25,8 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
-EXPOSE 22
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-CMD ["sh", "-c", "sysctl -w net.ipv4.conf.eth0.rp_filter=0 && sysctl -w net.ipv4.conf.all.rp_filter=0 && cron && /usr/sbin/sshd -D & while true; do if [ -f /etc/keepalived/keepalived.conf ]; then keepalived -f /etc/keepalived/keepalived.conf; break; else sleep 2; fi; done & tail -f /dev/null"]
+EXPOSE 22
+CMD ["/start.sh"]
