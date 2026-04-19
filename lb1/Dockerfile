@@ -27,7 +27,7 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 
-COPY start.sh /start.sh
+COPY lb1/start.sh /start.sh
 RUN chmod +x /start.sh
 
 EXPOSE 22

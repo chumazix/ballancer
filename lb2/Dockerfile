@@ -25,7 +25,7 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
-COPY start.sh /start.sh
+COPY lb2/start.sh /start.sh
 RUN chmod +x /start.sh
 
 EXPOSE 22
