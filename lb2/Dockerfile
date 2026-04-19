@@ -27,4 +27,4 @@ RUN mkdir /var/run/sshd && \
 
 EXPOSE 22
 
-CMD ["sh", "-c", "sysctl -w net.ipv4.conf.eth0.rp_filter=0 && sysctl -w net.ipv4.conf.all.rp_filter=0 && cron && /usr/sbin/sshd -D & while [ ! -f /etc/keepalived/keepalived.conf ]; do sleep 1; done; keepalived -f /etc/keepalived/keepalived.conf & tail -f /dev/null"]
+CMD ["sh", "-c", "sysctl -w net.ipv4.conf.eth0.rp_filter=0 && sysctl -w net.ipv4.conf.all.rp_filter=0 && cron && /usr/sbin/sshd -D & while true; do if [ -f /etc/keepalived/keepalived.conf ]; then keepalived -f /etc/keepalived/keepalived.conf; break; else sleep 2; fi; done & tail -f /dev/null"]
