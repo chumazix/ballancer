@@ -9,6 +9,18 @@
         state: present
         update_cache: yes
 
+    - name: Disable rp_filter for VIP to work (must be done before starting keepalived)
+      sysctl:
+        name: "{{ item }}"
+        value: 0
+        sysctl_set: yes
+        state: present
+        reload: yes
+      loop:
+        - net.ipv4.conf.eth0.rp_filter
+        - net.ipv4.conf.all.rp_filter
+      when: inventory_hostname in groups['lb']
+
     - name: Copy keepalived configuration for lb1
       copy:
         src: /ansible/files/keepalived_lb1.conf
@@ -35,24 +47,17 @@
       poll: 0
       when: keepalived_pid.rc != 0
 
+    - name: Wait for VIP to appear (give keepalived time)
+      pause:
+        seconds: 3
+      when: keepalived_pid.rc != 0
+
     - name: Add keepalived to crontab for autostart
       cron:
         name: "start keepalived"
         special_time: reboot
         job: "keepalived -f /etc/keepalived/keepalived.conf > /var/log/keepalived.log 2>&1"
         user: root
-
-    - name: Disable rp_filter for VIP to work
-      sysctl:
-        name: "{{ item }}"
-        value: 0
-        sysctl_set: yes
-        state: present
-        reload: yes
-      loop:
-        - net.ipv4.conf.eth0.rp_filter
-        - net.ipv4.conf.all.rp_filter
-      when: inventory_hostname in groups['lb']
 
   handlers:
     - name: restart keepalived
