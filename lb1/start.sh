@@ -14,28 +14,20 @@ while [ ! -f /usr/sbin/nginx ]; do
 done
 nginx &
 
-# Ждём конфиг keepalived
+# Ждём конфиг keepalived и запускаем
 while [ ! -f /etc/keepalived/keepalived.conf ]; do
     sleep 1
 done
 keepalived -f /etc/keepalived/keepalived.conf &
 
-# Ждём node_exporter
-while [ ! -f /usr/local/bin/node_exporter ]; do
-    sleep 1
-done
+# Запускаем экспортеры (если нужны)
+while [ ! -f /usr/local/bin/node_exporter ]; do sleep 1; done
 /usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1 &
 
-# Ждём nginx-prometheus-exporter
-while [ ! -f /usr/local/bin/nginx-prometheus-exporter ]; do
-    sleep 1
-done
+while [ ! -f /usr/local/bin/nginx-prometheus-exporter ]; do sleep 1; done
 /usr/local/bin/nginx-prometheus-exporter -nginx.scrape-uri http://127.0.0.1:80/nginx_status > /var/log/nginx-exporter.log 2>&1 &
 
-# Ждём keepalived-exporter
-while [ ! -f /usr/local/bin/keepalived-exporter ]; do
-    sleep 1
-done
+while [ ! -f /usr/local/bin/keepalived-exporter ]; do sleep 1; done
 /usr/local/bin/keepalived-exporter > /var/log/keepalived-exporter.log 2>&1 &
 
 # Держим контейнер активным
