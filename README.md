@@ -97,7 +97,7 @@ docker exec ansible curl 'http://172.20.0.30:8428/api/v1/query?query=up' | grep 
 # Проверить состояние VIP через keepalived-exporter (должно быть 1 или 2)
 docker exec ansible curl 'http://172.20.0.30:8428/api/v1/query?query=keepalived_vrrp_state'
 ```
-4. Проверка визуализации в Grafana
+7. Проверка визуализации в Grafana
 
 Открыть браузер и перейти по адресу http://<IP_хоста>:3000
 
