@@ -43,7 +43,7 @@
       "type": "stat",
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
       "targets": [
-        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.10:9165\"}", "legendFormat": "VIP status", "refId": "A" }
+        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.10:9165\"}", "legendFormat": "VIP статус", "refId": "A" }
       ],
       "fieldConfig": {
         "defaults": {
@@ -103,7 +103,7 @@
       "targets": [
         { "expr": "rate(nginx_http_requests_total[5m])", "legendFormat": "{{instance}}", "refId": "A" }
       ],
-      "description": "Примечание: разбивка по статус-кодам требует установки nginx-module-vts."
+      "description": "Примечание: разбивка по статус-кодам требует установки nginx-module-vts. В текущей конфигурации доступна только общая статистика."
     },
     {
       "id": 9,
