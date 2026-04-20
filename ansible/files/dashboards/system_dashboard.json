@@ -43,14 +43,15 @@
       "type": "stat",
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
       "targets": [
-        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.10:9165\"}", "legendFormat": "VIP статус", "refId": "A" }
+        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.10:9165\"}", "legendFormat": "lb1", "refId": "A" },
+        { "expr": "keepalived_vrrp_state{instance=\"172.20.0.11:9165\"}", "legendFormat": "lb2", "refId": "B" }
       ],
       "fieldConfig": {
         "defaults": {
           "thresholds": { "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1.5 } ] },
           "mappings": [
-            { "type": "value", "value": "1", "text": "MASTER (активен на lb1)" },
-            { "type": "value", "value": "2", "text": "BACKUP (резерв на lb2)" }
+            { "type": "value", "value": "1", "text": "MASTER" },
+            { "type": "value", "value": "2", "text": "BACKUP" }
           ]
         }
       }
@@ -103,7 +104,7 @@
       "targets": [
         { "expr": "rate(nginx_http_requests_total[5m])", "legendFormat": "{{instance}}", "refId": "A" }
       ],
-      "description": "Примечание: разбивка по статус-кодам требует установки nginx-module-vts. В текущей конфигурации доступна только общая статистика."
+      "description": "Примечание: разбивка по статус-кодам требует установки nginx-module-vts."
     },
     {
       "id": 9,
