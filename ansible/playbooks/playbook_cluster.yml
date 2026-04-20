@@ -48,18 +48,3 @@
         special_time: reboot
         job: "keepalived -f /etc/keepalived/keepalived.conf > /var/log/keepalived.log 2>&1"
         user: root
-
-  handlers:
-    - name: restart keepalived
-      shell: pkill keepalived || true ; keepalived -f /etc/keepalived/keepalived.conf &
-      become: yes
-
-- name: Restart load balancers containers to apply all changes
-  hosts: localhost
-  become: no
-  tasks:
-    - name: Restart lb1 and lb2
-      shell: docker restart lb1 lb2
-      args:
-        executable: /bin/bash
-      run_once: yes
