@@ -182,3 +182,24 @@ docker exec ansible curl 'http://172.20.0.30:8428/api/v1/query?query=keepalived_
 
 ![System Dashboard](screenshots/dashboard.png)
 
+
+
+
+# 1. Установите зависимости
+sudo apt install -y dbus-user-session uidmap
+
+# 2. Остановите обычный Docker
+sudo systemctl stop docker docker.socket containerd
+sudo systemctl disable docker docker.socket containerd
+
+# 3. Запустите установку rootless (от вашего пользователя)
+dockerd-rootless-setuptool.sh install
+
+# 4. Добавьте переменные окружения (в ~/.bashrc)
+echo 'export PATH=/usr/bin:$PATH' >> ~/.bashrc
+echo 'export DOCKER_HOST=unix:///run/user/$(id -u)/docker.sock' >> ~/.bashrc
+source ~/.bashrc
+
+# 5. Запустите rootless Docker
+systemctl --user start docker
+systemctl --user enable docker
