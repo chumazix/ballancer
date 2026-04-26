@@ -24,6 +24,10 @@ cd ballancer
 # 2. Сделайте скрипты исполняемыми
 chmod +x deploy.sh setup_haproxy.sh
 
+# 2.1. Проверка, что пользователь в группе docker
+sudo usermod -aG docker $USER
+newgrp docker
+
 # 3. Запустите развёртывание
 ./deploy.sh
 
