@@ -71,6 +71,9 @@ services:
     environment:
       - ANSIBLE_CONFIG=/ansible/ansible.cfg
     command: sh -c "chmod 600 /ansible/keys/id_rsa && sleep infinity"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     restart: unless-stopped
 
 
@@ -88,6 +91,9 @@ services:
     volumes:
       - ./ansible/files:/etc/victoriametrics:ro
       - vm-data:/var/lib/victoriametrics
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     restart: unless-stopped
 
   grafana:
@@ -103,6 +109,9 @@ services:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     restart: unless-stopped
 
 volumes:
