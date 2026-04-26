@@ -18,7 +18,7 @@
 
 ```bash
 # 1. Клонируйте репозиторий
-git clone https://github.com/ваш-репозиторий/ballancer.git
+git clone https://github.com/chumazix/ballancer.git
 cd ballancer
 
 # 2. Сделайте скрипты исполняемыми
